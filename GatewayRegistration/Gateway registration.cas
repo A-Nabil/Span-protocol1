@@ -1,0 +1,26 @@
+
+protocol GatewayRegistration; % GatewayRegistration protocol
+
+identifiers
+A,B : user;
+IDg ,Kug, Ceg: number;
+Ka,Kb : public_key;
+
+messages
+1. A -> B : A,{IDg,Kug}Kb
+1. B -> A : B,{Ceg}Ka
+
+knowledge
+B : A,Ka,Kb;
+A : B,Ka,Kb;
+
+session_instances
+[A:gateway,B:controller,Ka:ka,Kb:kb];
+
+intruder_knowledge
+gateway,controller,ka,kb;
+
+goal
+B authenticates A on IDg;
+B authenticates A on Kug;
+secrecy_of IDg [A,B];
