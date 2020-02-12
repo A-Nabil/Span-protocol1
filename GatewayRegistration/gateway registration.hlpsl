@@ -19,7 +19,7 @@ def=
 	init
 		State := 0
 	transition
-		1. State=0 /\ RCV({IDg'.Kug'}_Kb) =|> State':=1 /\ witness(B,A,auth_2,Kug') /\ secret(IDg',sec_3,{A,B}) /\ Ceg':=new() /\ SND({Ceg'}_Ka)
+		1. State=0 /\ RCV({IDg'.Kug'}_Kb) =|> State':=1 /\ witness(B,A,auth_2,Kug') /\ Ceg':=new() /\ SND({Ceg'}_Ka)
 end role
 
 role session1(B:agent,A:agent,Ka:public_key,Kb:public_key)
@@ -40,9 +40,9 @@ def=
 end role
 
 goal
+	secrecy_of sec_3
 	authentication_on auth_1
 	authentication_on auth_2
-	secrecy_of sec_3
 end goal
 
 environment()
