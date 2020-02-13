@@ -1,5 +1,4 @@
 
-
 role role_A(A:agent,B:agent,Ka:public_key,Kb:public_key,SND,RCV:channel(dy))
 played_by A
 def=
@@ -8,8 +7,11 @@ def=
 	init
 		State := 0
 	transition
-		1. State=0 /\ RCV(start) =|> State':=1 /\ Kug':=new() /\ IDg':=new() /\ secret(IDg',sec_3,{A,B}) /\ SND({IDg'.Kug'}_Kb)
-		1. State=1 /\ RCV({Ceg'}_Ka) =|> State':=2 /\ witness(A,B,auth_3,Ceg')
+		1. State=0 /\ RCV(start) =|> State':=1 /\ Kug':=new() /\ IDg':=new()  /\ SND({IDg'.Kug'}_Kb)
+	                    /\ secret(IDg',sec_3,{A,B}) /\ witness(A,B,auth_2,Kug') /\ witness(A,B,auth_1,IDg')
+
+		1. State=1 /\ RCV({Ceg'}_Ka) =|> State':=2 
+		    /\ request(A,B,auth_3,Ceg')
 end role
 
 role role_B(B:agent,A:agent,Ka:public_key,Kb:public_key,SND,RCV:channel(dy))
@@ -21,7 +23,7 @@ def=
 		State := 0
 	transition
 		1. State=0 /\ RCV({IDg'.Kug'}_Kb) =|> State':=1  /\ Ceg':=new() /\ SND({Ceg'}_Ka)
-	                    /\ witness(B,A,auth_2,Kug') /\ witness(B,A,auth_1,IDg')
+                                    /\ witness(B,A,auth_3,Ceg')  /\ request(B,A,auth_2,Kug')
 end role
 
 role session1(B:agent,A:agent,Ka:public_key,Kb:public_key)
@@ -35,7 +37,7 @@ end role
 role environment()
 def=
 	const
-		hash_0:hash_func,ka:public_key,controller:agent,gateway:agent,kb:public_key,auth_1:protocol_id,auth_2:protocol_id,auth_3:protocol_id,sec_3:protocol_id
+		ka:public_key,controller:agent,gateway:agent,kb:public_key,auth_1:protocol_id,auth_2:protocol_id,auth_3:protocol_id,sec_3:protocol_id
 	intruder_knowledge = {gateway,controller,ka,kb}
 	composition
 		session1(controller,gateway,ka,kb)
