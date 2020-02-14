@@ -1,0 +1,49 @@
+
+role role_A(A:agent,B:agent,Kd:public_key,Kg:public_key,SND,RCV:channel(dy))
+played_by A
+def=
+	local
+		State:nat,IDd:text,N1:text,N2:text
+	init
+		State := 0
+	transition
+		1. State=0 /\ RCV(start) =|> State':=1 /\ N1':=new() /\ IDd':=new() /\ SND({IDd'.N1'}_Kg)
+		   /\ secret(IDd',sec_1,{A,B})
+
+		2. State=1 /\ RCV({N1.N2'}_Kd) =|> State':=2 /\ SND({N2'}_Kg)
+end role
+
+role role_B(B:agent,A:agent,Kd:public_key,Kg:public_key,SND,RCV:channel(dy))
+played_by B
+def=
+	local
+		State:nat,IDd:text,N1:text,N2:text
+	init
+		State := 0
+	transition
+		1. State=0 /\ RCV({IDd'.N1'}_Kg) =|> State':=1  /\ N2':=new() /\ SND({N1'.N2'}_Kd)
+		3. State=1 /\ RCV({N2}_Kg) =|> State':=2
+end role
+
+role session1(B:agent,A:agent,Kd:public_key,Kg:public_key)
+def=
+	local
+		SND2,RCV2,SND1,RCV1:channel(dy)
+	composition
+		role_B(B,A,Kd,Kg,SND2,RCV2) /\ role_A(A,B,Kd,Kg,SND1,RCV1)
+end role
+
+role environment()
+def=
+	const
+		kd:public_key,gateway:agent,device:agent,kg:public_key,sec_1:protocol_id
+	intruder_knowledge = {device,gateway,kd,kg}
+	composition
+		session1(gateway,device,kd,kg)
+end role
+
+goal
+	secrecy_of sec_1
+end goal
+
+environment()
