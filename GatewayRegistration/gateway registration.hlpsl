@@ -1,53 +1,50 @@
 
-
-role role_A(A:agent,B:agent,Ka:public_key,Kb:public_key,SND,RCV:channel(dy))
+role role_A(A:agent,B:agent,Kd:public_key,Kg:public_key,SND,RCV:channel(dy))
 played_by A
 def=
 	local
-		State:nat,IDg:text,Kug:text,Ceg:text
+		State:nat,IDd:text,T:text,N1:text
 	init
 		State := 0
 	transition
-		1. State=0 /\ RCV(start) =|> State':=1 /\ Kug':=new() /\ IDg':=new()  /\ SND({IDg'}_Kb)
-	                    /\ secret(IDg',sec_1,{A,B})
-
-		2. State=1 /\ RCV({Ceg'.IDg}_Ka) =|> State':=2 
-		    /\ request(A,B,auth_1,IDg)
+		1. State=0 /\ RCV(start) =|> State':=1 /\ N1':=new() /\ IDd':=new() /\ SND({IDd'.N1'}_Kg) /\ secret(IDd',sec_1,{A,B}) 
+		4. State=1 /\ RCV({T'.N1}_Kd) =|> State':=2 
+		   /\ request(A,B,auth_1,T')
 end role
 
-role role_B(B:agent,A:agent,Ka:public_key,Kb:public_key,SND,RCV:channel(dy))
+role role_B(B:agent,A:agent,Kd:public_key,Kg:public_key,SND,RCV:channel(dy))
 played_by B
 def=
 	local
-		State:nat,IDg:text,Kug:text,Ceg:text
+		State:nat,IDd:text,T:text,N1:text
 	init
 		State := 0
 	transition
-		1. State=0 /\ RCV({IDg'}_Kb) =|> State':=1  /\ Ceg':=new() /\ SND({Ceg'.IDg'}_Ka)
-                                    /\ witness(B,A,auth_1,IDg')  
+		1. State=0 /\ RCV({IDd'.N1'}_Kg) =|> State':=1  /\ T':=new()  /\ SND({T'.N1'}_Kd) /\ secret(T',sec_2,{A,B})  
+                   /\ witness(B,A,auth_1,T')  
 end role
 
-role session1(B:agent,A:agent,Ka:public_key,Kb:public_key)
+role session1(B:agent,A:agent,Kd:public_key,Kg:public_key)
 def=
 	local
 		SND2,RCV2,SND1,RCV1:channel(dy)
 	composition
-		role_B(B,A,Ka,Kb,SND2,RCV2) /\ role_A(A,B,Ka,Kb,SND1,RCV1)
+		role_B(B,A,Kd,Kg,SND2,RCV2) /\ role_A(A,B,Kd,Kg,SND1,RCV1)
 end role
 
 role environment()
 def=
 	const
-		ka:public_key,controller:agent,gateway:agent,kb:public_key,auth_1:protocol_id,sec_1:protocol_id
-	intruder_knowledge = {gateway,controller,ka,kb}
+		kd:public_key,gateway:agent,device:agent,kg:public_key,sec_1:protocol_id,sec_2,auth_1:protocol_id
+	intruder_knowledge = {device,gateway,kd,kg}
 	composition
-		session1(controller,gateway,ka,kb)
+		session1(gateway,device,kd,kg)
 end role
 
 goal
 	secrecy_of sec_1
+                secrecy_of sec_2
 	authentication_on auth_1
-
 end goal
 
 environment()
