@@ -1,0 +1,24 @@
+protocol GatewayRegistration; % GatewayRegistration protocol
+
+identifiers
+A,B : user;
+IDd,N1,N2: number;
+Kg,Kd : public_key;
+
+messages
+1. A -> B : {IDd,N1}Kg
+2. B -> A : {N1,N2}Kd
+3. A -> B : {N2}Kg
+
+knowledge
+A : B,Kd,Kg;
+B : A,Kd,Kg;
+
+session_instances
+[A:device,B:gateway,Kd:kd,Kg:kg];
+
+intruder_knowledge
+device,gateway,kd,kg;
+
+goal
+secrecy_of IDd [A,B];
