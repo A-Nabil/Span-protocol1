@@ -1,0 +1,27 @@
+protocol Deviceregistration; % GatewayRegistration protocol;
+
+identifiers
+A,B,C : user;
+IDd,N1,N2,T : number;
+Ka,Kb,Kc : public_key;
+
+messages
+1. A -> B : {IDd,N1}Kb
+2. B -> C : {IDd,N2}Kc
+3. C -> B : {IDd,N2}Kb
+4. B -> A : {IDd,N1,T}Ka
+
+knowledge
+A : B,Ka,Kb,N1;
+B : A,C,N2,Ka,Kb,Kc;
+C : B,Kb,Kc,N2;
+
+session_instances
+[A:device,B:gateway,A:controller,Ka:ka,Kb:kb,Kc:kc];
+
+intruder_knowledge
+device,gateway,controller,ka,kb,kc;
+
+goal
+B authenticates A on IDd;
+secrecy_of T [A,B];
