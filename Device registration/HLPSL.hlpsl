@@ -1,0 +1,62 @@
+
+role role_A(A:agent,B:agent,Ka:public_key,Kb:public_key,SND,RCV:channel(dy))
+played_by A
+def=
+	local
+		State:nat,N1:text,IDd:text,T:text
+	init
+		State := 0
+	transition
+		1. State=0 /\ RCV(start) =|> State':=1 /\ N1':=new() /\ IDd':=new() /\ SND({IDd'.N1'}_Kb)
+		4. State=1 /\ RCV({IDd.N1.T'}_Ka) =|> State':=2 /\ secret(T',sec_2,{A,B})
+end role
+
+role role_B(B:agent,A:agent,C:agent,Ka:public_key,Kb:public_key,Kc:public_key,SND,RCV:channel(dy))
+played_by B
+def=
+	local
+		State:nat,N2:text,N1:text,IDd:text,T:text
+	init
+		State := 0
+	transition
+		1. State=0 /\ RCV({IDd'.N1'}_Kb) =|> State':=1 /\ N2':=new() /\ SND({IDd'.N2'}_Kc)
+		3. State=1 /\ RCV({IDd.N2}_Kb) =|> State':=2 /\ T':=new() /\ secret(T',sec_2,{A,B}) /\ SND({IDd.N1.T'}_Ka)
+end role
+
+role role_C(C:agent,B:agent,Kb:public_key,Kc:public_key,SND,RCV:channel(dy))
+played_by C
+def=
+	local
+		State:nat,IDd:text,N2:text
+	init
+		State := 0
+	transition
+		2. State=0 /\ RCV({IDd'.N2'}_Kc) =|> State':=1 /\ SND({IDd'.N2'}_Kb)
+end role
+
+role session1(Kc:public_key,C:agent,A:agent,B:agent,Ka:public_key,Kb:public_key)
+def=
+	local
+		SND3,RCV3,SND2,RCV2,SND1,RCV1:channel(dy)
+	composition
+		role_A(A,B,Ka,Kb,SND3,RCV3) /\ role_B(B,A,C,Ka,Kb,Kc,SND2,RCV2) /\ role_A(A,B,Ka,Kb,SND1,RCV1)
+end role
+
+role environment()
+def=
+	const
+		ka:public_key,kb:public_key,kc:public_key,
+                device:agent,gateway:agent,controller:agent,
+                auth_1:protocol_id,sec_2:protocol_id
+
+	intruder_knowledge = {device,gateway,controller,ka,kb,kc}
+	composition
+		session1(kc,controller,device,gateway,ka,kb)
+end role
+
+goal
+	authentication_on auth_1
+	secrecy_of sec_2
+end goal
+
+environment()
