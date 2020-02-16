@@ -8,7 +8,7 @@ def=
 		State := 0
 	transition
 		1. State=0 /\ RCV(start) =|> State':=1 /\ N1':=new() /\ IDd':=new() /\ SND({IDd'.N1'}_Kb)
-		4. State=1 /\ RCV({IDd.N1.T'}_Ka) =|> State':=2 
+		4. State=1 /\ RCV({IDd.N1.T'}_Ka) =|> State':=2 /\ request(A,B,auth_1,T')
 end role
 
 role role_B(B:agent,A:agent,C:agent,Ka,Kb,Kc:public_key,SND,RCV:channel(dy))
@@ -20,7 +20,8 @@ def=
 		State := 0
 	transition
 		1. State=0 /\ RCV({IDd'.N1'}_Kb) =|> State':=1 /\ N2':=new() /\ SND({IDd'.N2'}_Kc)
-		3. State=1 /\ RCV({IDd.N2}_Kb) =|> State':=2 /\ T':=new() /\ secret(T',sec_2,{A,B}) /\ SND({IDd.N1.T'}_Ka)
+		3. State=1 /\ RCV({IDd.N2}_Kb) =|> State':=2 /\ T':=new() /\ secret(T',sec_2,{A,B}) /\ SND({IDd.N1.T'}_Ka) 
+		 /\ witness(B,A,auth_1,T')  
 end role
 
 role role_C(C:agent,B:agent,Kb:public_key,Kc:public_key,SND,RCV:channel(dy))
