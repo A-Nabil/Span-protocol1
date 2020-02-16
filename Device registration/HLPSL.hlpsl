@@ -1,5 +1,5 @@
 
-role role_A(A:agent,B:agent,Ka:public_key,Kb:public_key,SND,RCV:channel(dy))
+role role_A(A:agent,B:agent,Ka,Kb:public_key,SND,RCV:channel(dy))
 played_by A
 def=
 	local
@@ -8,10 +8,10 @@ def=
 		State := 0
 	transition
 		1. State=0 /\ RCV(start) =|> State':=1 /\ N1':=new() /\ IDd':=new() /\ SND({IDd'.N1'}_Kb)
-		4. State=1 /\ RCV({IDd.N1.T'}_Ka) =|> State':=2 /\ secret(T',sec_2,{A,B})
+		4. State=1 /\ RCV({IDd.N1.T'}_Ka) =|> State':=2 
 end role
 
-role role_B(B:agent,A:agent,C:agent,Ka:public_key,Kb:public_key,Kc:public_key,SND,RCV:channel(dy))
+role role_B(B:agent,A:agent,C:agent,Ka,Kb,Kc:public_key,SND,RCV:channel(dy))
 played_by B
 def=
 	local
@@ -31,15 +31,16 @@ def=
 	init
 		State := 0
 	transition
-		2. State=0 /\ RCV({IDd'.N2'}_Kc) =|> State':=1 /\ SND({IDd'.N2'}_Kb)
+		2. State=0 /\ RCV({IDd'.N2'}_Kc) =|> State':=1 /\ SND({IDd'.N2'}_Kb) 
 end role
 
-role session1(Kc:public_key,C:agent,A:agent,B:agent,Ka:public_key,Kb:public_key)
+role session1(A,B,C:agent,Ka,Kb,Kc:public_key)
 def=
 	local
 		SND3,RCV3,SND2,RCV2,SND1,RCV1:channel(dy)
 	composition
-		role_A(A,B,Ka,Kb,SND3,RCV3) /\ role_B(B,A,C,Ka,Kb,Kc,SND2,RCV2) /\ role_A(A,B,Ka,Kb,SND1,RCV1)
+		role_A(A,B,Ka,Kb,SND1,RCV1) /\ role_B(B,A,C,Ka,Kb,Kc,SND2,RCV2) 
+		/\ role_C(C,B,Kb,Kc,SND3,RCV3)
 end role
 
 role environment()
@@ -51,7 +52,7 @@ def=
 
 	intruder_knowledge = {device,gateway,controller,ka,kb,kc}
 	composition
-		session1(kc,controller,device,gateway,ka,kb)
+		session1(device,gateway,controller,ka,kb,kc)
 end role
 
 goal
