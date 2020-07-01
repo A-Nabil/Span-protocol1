@@ -20,6 +20,13 @@ modifier onlyCloudServer()
    require(cloudServerAddress == msg.sender,"Sender not authorized.");
    _;
 }
+
+modifier onlyController()
+{
+   require(cloudServerAddress == msg.sender,"Sender not authorized.");
+   _;
+}
+
 modifier onlyControllers()
 {
   require(bytes(controlles[msg.sender]).length == 0,"Sender not authorized.");
@@ -37,14 +44,15 @@ modifier onlyControllers()
       require(bytes(controlles[id]).length == 0,"controller exists");
        controlles[id] = jsonld;
     }
-    //Add Fog node
-    function addFogNodes(string memory id,string memory jsonld) public onlyControllers {
+    
+    //Add gateway
+    function addGateway(string memory id,string memory jsonld) public onlyControllers {
       require(bytes(fogNodes[id]).length == 0,"node exists");
       fogNodes[id] = jsonld;
     }
 
     //Add user device
-    function addUserDevice(string memory userId,string memory deviceId, string memory deviceJsonld ) public onlyCloudServer
+    function addUserDevice(string memory userId,string memory deviceId, string memory deviceJsonld ) public onlyController
     {
         //Check if user exists
          require(bytes(users[userId]).length != 0,"user dosn't exists");
