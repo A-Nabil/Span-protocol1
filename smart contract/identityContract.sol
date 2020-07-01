@@ -8,16 +8,16 @@ mapping(string => string) public fogNodes; // fogNodes
 mapping(string => string) public devices; // IoT devices
 mapping(string => mapping(string => string)) public users_devices; // mapping for users and their accessable devices
 
-address owner;
+address cloudServerAddress;
 
 constructor() public
 {
-owner = msg.sender;
+cloudServerAddress = msg.sender;
 }
 
-modifier onlyAdmin()
+modifier onlyCloudServer()
 {
-   require(owner == msg.sender,"Sender not authorized.");
+   require(cloudServerAddress == msg.sender,"Sender not authorized.");
    _;
 }
 modifier onlyControllers()
@@ -25,13 +25,15 @@ modifier onlyControllers()
   require(bytes(controlles[msg.sender]).length == 0,"Sender not authorized.");
         _;
 }
-  // adding user
-  function addUser(string memory id,string memory jsonld) public onlyAdmin {
+
+    //add user
+    function addUser(string memory id,string memory jsonld) public onlyCloudServer {
     require(bytes(users[id]).length == 0,"user exists");
     users[id] = jsonld;
     }
+    
     //Add controller
-    function addController(address id,string memory jsonld) public onlyAdmin {
+    function addController(address id,string memory jsonld) public onlyCloudServer {
       require(bytes(controlles[id]).length == 0,"controller exists");
        controlles[id] = jsonld;
     }
@@ -42,7 +44,7 @@ modifier onlyControllers()
     }
 
     //Add user device
-    function addUserDevice(string memory userId,string memory deviceId, string memory deviceJsonld ) public onlyAdmin
+    function addUserDevice(string memory userId,string memory deviceId, string memory deviceJsonld ) public onlyCloudServer
     {
         //Check if user exists
          require(bytes(users[userId]).length != 0,"user dosn't exists");
