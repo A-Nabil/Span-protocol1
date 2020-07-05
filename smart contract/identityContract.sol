@@ -27,7 +27,7 @@ modifier onlyController()
    _;
 }
 
-modifier onlyControllers()
+modifier onlyGateways()
 {
   require(bytes(controlles[msg.sender]).length == 0,"Sender not authorized.");
         _;
