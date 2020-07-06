@@ -4,7 +4,7 @@ contract IdentityContract {
   string myName = "Tristan";
 mapping(string => string) public users; // users of the system
 mapping(address => string) public controlles; // controlles
-mapping(string => string) public fogNodes; // fogNodes
+mapping(string => string) public gateways; // gateways
 mapping(string => string) public devices; // IoT devices
 mapping(string => mapping(string => string)) public users_devices; // mapping for users and their accessable devices
 
@@ -21,13 +21,13 @@ modifier onlyCloudServer()
    _;
 }
 
-modifier onlyController()
+modifier onlyGateways()
 {
-   require(cloudServerAddress == msg.sender,"Sender not authorized.");
+  require(bytes(controlles[msg.sender]).length == 0,"Sender not authorized.");
    _;
 }
 
-modifier onlyGateways()
+modifier onlyControllers()
 {
   require(bytes(controlles[msg.sender]).length == 0,"Sender not authorized.");
         _;
@@ -47,8 +47,8 @@ modifier onlyGateways()
     
     //Add gateway
     function addGateway(string memory id,string memory jsonld) public onlyControllers {
-      require(bytes(fogNodes[id]).length == 0,"node exists");
-      fogNodes[id] = jsonld;
+      require(bytes(gateways[id]).length == 0,"node exists");
+      gateways[id] = jsonld;
     }
 
     //Add user device
