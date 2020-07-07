@@ -3,7 +3,7 @@ pragma solidity ^0.6.1;
 contract IdentityContract {
   string myName = "Tristan";
 mapping(string => string) public users; // users of the system
-mapping(address => string) public controlles; // controlles
+mapping(address => string) public controllers; // controllers
 mapping(string => string) public gateways; // gateways
 mapping(string => string) public devices; // IoT devices
 mapping(string => mapping(string => string)) public users_devices; // mapping for users and their accessable devices
@@ -23,13 +23,13 @@ modifier onlyCloudServer()
 
 modifier onlyGateways()
 {
-  require(bytes(controlles[msg.sender]).length == 0,"Sender not authorized.");
+  require(bytes(controllers[msg.sender]).length == 0,"Sender not authorized.");
    _;
 }
 
 modifier onlyControllers()
 {
-  require(bytes(controlles[msg.sender]).length == 0,"Sender not authorized.");
+  require(bytes(controllers[msg.sender]).length == 0,"Sender not authorized.");
         _;
 }
 
@@ -41,8 +41,8 @@ modifier onlyControllers()
     
     //Add controller
     function addController(address id,string memory jsonld) public onlyCloudServer {
-      require(bytes(controlles[id]).length == 0,"controller exists");
-       controlles[id] = jsonld;
+      require(bytes(controllers[id]).length == 0,"controller exists");
+       controllers[id] = jsonld;
     }
     
     //Add gateway
