@@ -52,7 +52,7 @@ modifier onlyControllers()
     }
 
     //Add user device
-    function addUserDevice(string memory userId,string memory deviceId, string memory deviceJsonld ) public onlyController
+    function addUserDevice(string memory userId,string memory deviceId, string memory deviceJsonld ) public onlyControllers
     {
         //Check if user exists
          require(bytes(users[userId]).length != 0,"user dosn't exists");
