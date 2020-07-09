@@ -1,13 +1,15 @@
-pragma solidity ^0.6.1;
+pragma solidity ^0.6.0;
 
 contract IdentityContract {
   string myName = "Tristan";
 mapping(string => string) public users; // users of the system
-mapping(address => string) public controllers; // controllers
-mapping(string => string) public gateways; // gateways
+mapping(address => string ) public controllers; // controllers
+mapping(address => string) public gateways; // gateways
 mapping(string => string) public devices; // IoT devices
 mapping(string => mapping(string => string)) public users_devices; // mapping for users and their accessable devices
-
+event test_value(uint  value1);
+bytes32  constant NULL = "";
+ 
 address cloudServerAddress;
 
 constructor() public
@@ -23,13 +25,13 @@ modifier onlyCloudServer()
 
 modifier onlyGateways()
 {
-  require(bytes(controllers[msg.sender]).length == 0,"Sender not authorized.");
+  require(bytes(controllers[msg.sender]).length != 0,"Sender not authorized.");
    _;
 }
 
 modifier onlyControllers()
 {
-  require(bytes(controllers[msg.sender]).length == 0,"Sender not authorized.");
+  require(bytes(controllers[msg.sender]).length != 0,"Sender not authorized.");
         _;
 }
 
@@ -40,13 +42,13 @@ modifier onlyControllers()
     }
     
     //Add controller
-    function addController(address id,string memory jsonld) public onlyCloudServer {
+    function addController(address id,string  memory jsonld) public onlyCloudServer {
       require(bytes(controllers[id]).length == 0,"controller exists");
        controllers[id] = jsonld;
     }
     
     //Add gateway
-    function addGateway(string memory id,string memory jsonld) public onlyControllers {
+    function addGateway(address  id,string memory jsonld) public onlyControllers {
       require(bytes(gateways[id]).length == 0,"node exists");
       gateways[id] = jsonld;
     }
